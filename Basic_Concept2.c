@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "Basic_Concept2.h"
 
 int main(int argc, char *argn[])
@@ -32,7 +33,10 @@ int main(int argc, char *argn[])
     Node *head = NULL;
     AddNode(&head, 5);
     AddNode(&head, 13);
+    AddNode(&head, 13);
     AddNode(&head, 24);
+    DeleteNode(&head, 1);
+    InsertNode(&head, 17, 13);
     PrintNode(head);
     FreeList(head);
 #endif
@@ -76,7 +80,7 @@ void AddNode(Node **node, int value)
         current->next = New_Node;
         return;
 
-        /*Wrong Use!!! it change the head pointer position
+        /*Wrong Use!!! It changes the head pointer position
         while ((*node)->next != NULL)
         {
             (*node) =(*node)->next;
@@ -85,29 +89,19 @@ void AddNode(Node **node, int value)
     }
 }
 
-void FreeList(Node *node)
-{
-    Node *current, *temp;
-    current = node;
-    while (current != NULL)
-    {
-        temp = current;
-        current = current->next;
-        free(temp);
-    }
-}
-
 void InsertNode(Node **node, int value, int insert_after_value)
 {
     Node *insert = (Node *)malloc(sizeof(Node));
     Node *current = *node;
+    bool find_value = false;
     while (current != NULL)
     {
         if (current->data == insert_after_value)
         {
+            find_value = true;
             insert->data = value;
             insert->next = NULL;
-            /*Check if node is last or not*/
+            /*Check node is the lastest*/
             if (current->next == NULL)
             {
                 current->next = insert;
@@ -122,5 +116,68 @@ void InsertNode(Node **node, int value, int insert_after_value)
         }
         /*Check next node*/
         current = current->next;
+    }
+    if (find_value == false)
+    {
+        printf("Can't find value:%d \n", insert_after_value);
+    }
+}
+
+void DeleteNode(Node **node, int delete_value)
+{
+    Node *temp = NULL;
+    Node *current = *node;
+    //bool find_value = false;
+
+    if (current->data == delete_value)
+    {
+        *node = current->next;
+        free(current);
+        return;
+    }
+
+    while (current != NULL)
+    {
+        if (current->next->data == delete_value)
+        {
+            //find_value = true;
+            temp = current->next;
+            current->next = current->next->next;
+            free(temp);
+            return;
+        }
+        current = current->next;
+    }
+    /*while ((current != NULL) && (current->data != delete_value))
+    {
+        temp = current;
+        current = current->next;
+    }
+    if (temp == NULL)
+    {
+        printf("Not found. \n");
+    }
+    else
+    {
+        temp->next = current->next;
+        free(temp);
+    }*/
+
+    /*if (find_value == false)
+    {
+        printf("Can't find value:%d \n", delete_value);
+        free(temp);
+    }*/
+}
+
+void FreeList(Node *node)
+{
+    Node *current, *temp;
+    current = node;
+    while (current != NULL)
+    {
+        temp = current;
+        current = current->next;
+        free(temp);
     }
 }
